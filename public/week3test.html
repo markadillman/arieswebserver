@@ -148,9 +148,9 @@ https://github.com/oreillymedia/svg-essentials-examples
 			function onFormSubmit() {
 				var svgObject = document.getElementById("svgObject");
 				var svgDoc = a.contentDocument;
+				console.log(svgDoc);
 				var svgCanvas = SVG.adopt(svgDoc);
 				console.log(svgCanvas);
-				console.log(svgCanvas.first());
 				svgCanvas.each(function(i,children){
 					console.log(i);
 				})
