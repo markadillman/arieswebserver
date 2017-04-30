@@ -356,6 +356,17 @@
 					setColorChoiceInHTML(color);
 				} // else do nothing
 			}
+
+			function onFormSubmit() {
+				var svgCanvas = SVG.select('#svgCanvas');
+				console.log(svgCanvas);
+				console.log(svgCanvas.first());
+				svgCanvas.each(function(i,children){
+					console.log(children);
+				})
+				//package them as strings and send to resource on app server
+				return false;
+			}
 			
 		</script>
 
@@ -388,7 +399,10 @@
 					<input type="button" name="redo" value="REDO" onclick="redoButton()">
 						
 					<input type="button" name="clear" value="CLEAR ALL" onclick="location.reload(true)">
-					
+				<label>
+					SUBMIT EDITS:
+					<input type="button" name="submit_button" onclick="onFormSubmit()"/>
+				</label>
 					<label>
 						SELECT STROKE WIDTH: 
 						<input type="number" name="strokewidth" value="1" min="1" max="50" onchange="changeStrokeWidth(this.value)"> 
