@@ -29,51 +29,6 @@ https://github.com/oreillymedia/svg-essentials-examples
 		</style>
 		<script type="text/javascript" xlink:href="js/svg.js/dist/svg.min.js"></script>
 		<script src="js/jquery-3.2.1.js"></script>
-		<script type="text/javascript">
-
-			function init() {
-				var draw = SVG('canvas');
-			}
-		
-			function changeDebugging(newState) {
-				window.setDebugging(newState);
-			}
-			
-			function changeColor(newColor) {
-				window.setColor(newColor);
-			}
-			
-			function changeShapeFill(newState) {
-				window.setShapeFill(newState);
-			}
-			
-			function changeStrokeWidth(newWidth) {
-				newWidth = parseInt(newWidth);
-				if (!isNaN(newWidth)) {
-					window.setStrokeWidth(newWidth);
-				}
-			}
-			
-			function changeTool(newTool) {
-				newTool = parseInt(newTool);
-				if (!isNaN(newTool)) {
-					window.setTool(newTool);
-				}
-			}
-			
-			function onFormSubmit() {
-				//access all child SVG elements
-				var draw = SVG('.canvas');
-				draw.each(function(i,children){
-					console.log(i);
-				})
-				//package them as strings and send to resource on app server
-				return false;
-			}
-
-
-			
-		</script>
 
 	</head>
 
@@ -131,6 +86,51 @@ https://github.com/oreillymedia/svg-essentials-examples
 			</div>
 
 		</div>
+				<script type="text/javascript">
+
+			function init() {
+				var draw = SVG('canvas');
+			}
+		
+			function changeDebugging(newState) {
+				window.setDebugging(newState);
+			}
+			
+			function changeColor(newColor) {
+				window.setColor(newColor);
+			}
+			
+			function changeShapeFill(newState) {
+				window.setShapeFill(newState);
+			}
+			
+			function changeStrokeWidth(newWidth) {
+				newWidth = parseInt(newWidth);
+				if (!isNaN(newWidth)) {
+					window.setStrokeWidth(newWidth);
+				}
+			}
+			
+			function changeTool(newTool) {
+				newTool = parseInt(newTool);
+				if (!isNaN(newTool)) {
+					window.setTool(newTool);
+				}
+			}
+			
+			function onFormSubmit() {
+				//access all child SVG elements
+				var draw = SVG('svgcanvas');
+				draw.each(function(i,children){
+					console.log(i);
+				})
+				//package them as strings and send to resource on app server
+				return false;
+			}
+
+
+			
+		</script>
 
 	</body>
 
