@@ -146,7 +146,8 @@ https://github.com/oreillymedia/svg-essentials-examples
 			}
 			
 			function onFormSubmit() {
-				var canvasCount = SVG.adopt('svgCanvas');
+				var svgCanvas = $("object").contents().find('svg');
+				var canvasCount = SVG.adopt(svgCanvas);
 				canvasCount.each(function(i,children){
 					console.log(i);
 				})
