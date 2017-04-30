@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<!-- saved from url=(0073)http://web.engr.oregonstate.edu/~yorka/cs-467/tools/week-4/week4test.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+		
+
+		<title>Team Aries: Week 4 Drawing Tool</title>
+
+		<style type="text/css">
+			/* make form entries begin on a new line */
+			label {display: block;}
+			h1 {font-size: 125%;}
+			input[type=number] {width: 35px;}
+		</style>
+
+		<script type="text/javascript">
+		
+			var debugging = false;	// toggle the debug messages
+			var verboseDebugging = false; // toggle verbose debugging messages
+			var useRedBox = true;	// canvas is just a red box (for debugging)
+			var useFakeSurroundings = true; // surroundings are colored boxes (for debugging)
+			var masking = false;	// toggle the platform masking tools
+			var canvasObj;			// hidden canvas for getting color info
+			var context;			// the context of the hidden canvas
+			var canvasWidth = 600;	// size of the canvas
+			var canvasHeight = 350;
+			var canvasEdge = 50;	// size of the area showing surrounding tiles
+			var canvasBorder = 1;	// stroke width of the borders for the tiles
+			var drawControls;		// the drawing-specific tools
+			var platformControls;	// the platform-specific tools
+			var displayDiv;			// the display divs
+			var displayDivList = [];
+			var displayDivCanvasList = [];
+			var displayDivContextList = [];
+			var displayDivDict = {0: "aboveLeftDiv",
+								  1: "aboveDiv",
+								  2: "aboveRightDiv",
+								  3: "leftDiv",
+								  4: "centerDiv",
+								  5: "rightDiv",
+								  6: "belowLeftDiv",
+								  7: "belowDiv",
+								  8: "belowRightDiv"};
+			
+			// helper function to get individual display divs
+			// assumes init() has already populated displayDivList
+			// uses helper function from http://stackoverflow.com/a/28191966
+			function getKeyByVal(object, value) {
+				return Object.keys(object).find(key => object[key] === value);
+			}
+			function getDiv(divName) {
+				return displayDivList[getKeyByVal(displayDivDict, divName)];
+			}
+			
+			// initalize the rest of the page
+			function init() {
+				// create the hidden canvas for getting color info
+				canvasObj = document.createElement("canvas");
+				canvasObj.id = "canvasObj";
+				canvasObj.width = canvasWidth;
+				canvasObj.height = canvasHeight;
+				
+				// grab the context of the hidden canvas
+				context = canvasObj.getContext("2d");
+				
+				// for debugging, set the entire canvas to red
+				if (useRedBox) {
+					var redBox = context.createImageData(canvasWidth, canvasHeight);
+					for (var i = 0; i < redBox.data.length; i += 4) {
+						redBox.data[i+0] = 255;
+						redBox.data[i+1] = 0;
+						redBox.data[i+2] = 0;
+						redBox.data[i+3] = 255;
+					}
+					context.putImageData(redBox, 0, 0);
+				}
+				
+				// grab the different groups of tools
+				drawControls = document.getElementById("drawControls");
+				platformControls = document.getElementById("platformControls");
+				
+				// set the default visibility of the tool groups
+				drawControls.style.display = "block";
+				platformControls.style.display = "none";
+				
+				// grab the display divs
+				displayDiv = document.getElementById("displayDiv");
+				for (var i in displayDivDict) {
+					displayDivList[i] = document.getElementById(displayDivDict[i]);
+				}
+				
+				// create the canvas objects for the non-center display divs
+				var currentCanvas;
+				var currentId;
+				var currentWidth;
+				var currentHeight;
+				var currentContext;
+				for (var i = 0; i < displayDivList.length; i += 1) {
+					// don't try to do anything in the center div
+					if (displayDivDict[i] != "centerDiv") {
+						// create a canvas and set its id, width, and height
+						currentId = displayDivDict[i] + "Canvas";
+						currentCanvas = document.createElement("canvas");
+						currentCanvas.id = currentId;
+						currentWidth = canvasEdge;
+						currentHeight = canvasEdge;
+						if (i == 1 || i == 7 ) { // ??? maybe use the dict here?
+							currentWidth = canvasWidth;
+						}
+						if (i == 3 || i == 5) {
+							currentHeight = canvasHeight;
+						}
+						currentCanvas.width = currentWidth;
+						currentCanvas.height = currentHeight;
+						// set the click action for this canvas
+						currentCanvas.addEventListener("click", surroundingEyeDropper, false);
+						// add this canvas to the document so it will render
+						displayDivList[i].appendChild(currentCanvas);
+						// add this canvas to the canvas list
+						displayDivCanvasList[i] = document.getElementById(currentId);
+						// add its context to the context list
+						currentContext = currentCanvas.getContext("2d");
+						displayDivContextList[i] = currentContext;
+					}
+				}
+				
+				// load the image data into the non-center display div canvases
+				if (useFakeSurroundings) { // use a bunch of colored blocks
+					var colorBlock;
+					for (var i = 0; i < displayDivCanvasList.length; i += 1) {
+						// don't try to do anything in the center div
+						if (i != getKeyByVal(displayDivDict, "centerDiv")) {
+							// create the color block in canvas i
+							currentCanvas = displayDivCanvasList[i];
+							currentContext = displayDivContextList[i];
+							colorBlock = currentContext.createImageData(currentCanvas.width, currentCanvas.height);
+							for (var j = 0; j < colorBlock.data.length; j += 4) {
+								colorBlock.data[j+0] = 0;
+								colorBlock.data[j+1] = 0;
+								colorBlock.data[j+2] = i*17 + 100;
+								colorBlock.data[j+3] = 255;
+							}
+							currentContext.putImageData(colorBlock, 0, 0);
+						}
+					}
+				} else { // use real image data from the server
+					// ???
+				}
+				
+				// position the overall display div
+				displayDiv.style.position = "fixed";
+				displayDiv.style.top = "10%";
+				displayDiv.style.left = "25%";
+				
+				// set the size of the overall display div
+				// took this out - this is handled by the individual divs now
+				/*var divWidth = canvasWidth + (2 * canvasBorder) + (2 * canvasEdge);
+				var divHeight = canvasHeight + (2 * canvasBorder) + (2 * canvasEdge);
+				displayDiv.style.width =  divWidth.toString() + "px";
+				displayDiv.style.height = divHeight.toString() + "px";*/
+				
+				// position all the other display divs inside the overall div
+				var topVal, leftVal;
+				for (var i = 0; i < displayDivList.length; i += 1) {
+					displayDivList[i].style.position = "absolute";
+					displayDivList[i].style.border = canvasBorder + "px solid grey";
+					switch (i) { // ??? is there a more mathy way to do this?
+						// ??? maybe use the dict here?
+						case 0: // above left
+							topVal = 0;
+							leftVal = 0;
+							break;
+						case 1: // above
+							topVal = 0;
+							leftVal = canvasEdge + canvasBorder;
+							break;
+						case 2: // above right
+							topVal = 0;
+							leftVal = canvasEdge + canvasWidth + 2*canvasBorder;
+							break;
+						case 3: // left
+							topVal = canvasEdge + canvasBorder;
+							leftVal = 0;
+							break;
+						case 4: // center
+							topVal = canvasEdge + canvasBorder;
+							leftVal = canvasEdge + canvasBorder;
+							break;
+						case 5: // right
+							topVal = canvasEdge + canvasBorder;
+							leftVal = canvasEdge + canvasWidth + 2*canvasBorder;
+							break;
+						case 6: // below left
+							topVal = canvasEdge + canvasHeight + 2*canvasBorder;
+							leftVal = 0;
+							break;
+						case 7: // below
+							topVal = canvasEdge + canvasHeight + 2*canvasBorder;
+							leftVal = canvasEdge + canvasBorder;
+							break;
+						case 8: // below right
+							topVal = canvasEdge + canvasHeight + 2*canvasBorder;
+							leftVal = canvasEdge + canvasWidth + 2*canvasBorder;
+							break;
+						default: // should never get here
+							console.log("Something went horribly awry with positioning the display divs.");
+					}					
+					displayDivList[i].style.top = topVal.toString() + "px";
+					displayDivList[i].style.left = leftVal.toString() + "px";
+					// set div sizes
+					currentWidth = canvasEdge;
+					currentHeight = canvasEdge;
+					if (i == 1 || i == 7 ) { // ??? maybe use the dict here?
+						currentWidth = canvasWidth;
+					}
+					if (i == 3 || i == 5) {
+						currentHeight = canvasHeight;
+					}
+					if (i == 4) {
+						currentWidth = canvasWidth;
+						currentHeight = canvasHeight;
+					}
+					displayDivList[i].style.width = currentWidth + "px";
+					displayDivList[i].style.height = currentHeight + "px";
+				}
+				
+				// make the overall display div visible
+				displayDiv.style.display = "block";
+			}
+			
+			// stop event propagation so form doesn't actually submit
+			function onFormSubmit(form_element) {
+				return false;
+			}
+		
+			// update option selctions from the form
+			function changeDebugging(newState) {
+				debugging = newState;
+				window.setDebugging(newState);
+			}
+			function changeMasking(newState) {
+				masking = newState;
+				window.setMasking(newState);
+				// change controls to match newState
+				if (masking) { // make only platform tools visible
+					drawControls.style.display = "none";
+					platformControls.style.display = "block";
+				} else { // make only drawing tools visible
+					drawControls.style.display = "block";
+					platformControls.style.display = "none";
+				}
+			}
+			function changeColor(newColor) {
+				window.setColor(newColor);
+			}
+			function changeShapeFill(newState) {
+				window.setShapeFill(newState);
+			}
+			function changeStrokeWidth(newWidth) {
+				newWidth = parseInt(newWidth);
+				if (!isNaN(newWidth)) {
+					window.setStrokeWidth(newWidth);
+				}
+			}
+			function changeTool(newTool) {
+				newTool = parseInt(newTool);
+				if (!isNaN(newTool)) {
+					window.setTool(newTool);
+				}
+			}
+			
+			// undo button
+			function undoButton() {
+				console.log("Undid an action.");
+				alert("Sorry, undo doesn't work yet.");
+			}
+			
+			// redo button
+			function redoButton () {
+				console.log("Redid an action.");
+				alert("Sorry, redo doesn't work yet.");
+			}
+			
+			// update option selections from the SVG
+			function setColorChoiceInHTML(color) {
+				var colorPicker = document.getElementById("color");
+				colorPicker.value = color;
+				changeColor(color); // send back to SVG just in case
+			}
+			
+			// get the current SVG data from the SVG
+			function getSVGData() {
+				return window.sendSVGData();
+			}
+			
+			// load the current SVG into the canvas, overwriting the old data
+			function updateCanvas() {
+				var dataString = getSVGData();
+				if (verboseDebugging) {
+					console.log(dataString);
+				}
+				// put this data into the canvas
+				// ???
+			}
+			
+			// helper functions to convert rgb integers into a hex color string
+			function intToHexString(int) {
+				var hexString = int.toString(16);
+				if (hexString.length < 2) {
+					hexString = "0" + hexString;
+				}
+				return hexString;
+			}
+			function rgbToHexString(red, green, blue) {
+				var redString = intToHexString(red);
+				var greenString = intToHexString(green);
+				var blueString = intToHexString(blue);
+				var hexString = "#" + redString + greenString + blueString;
+				return hexString;
+			}
+			
+			// get the color of a pixel at the given coordinate in the given context
+			function getColorAt(myContext, xCoord, yCoord) {
+				var pixelData = myContext.getImageData(xCoord, yCoord, 1, 1);
+				var red = pixelData.data[0];
+				var green = pixelData.data[1];
+				var blue = pixelData.data[2];
+				var color = rgbToHexString(red, green, blue);
+				if (debugging) {
+					console.log("Eye dropper at (" + xCoord.toString() + ", " +
+							yCoord.toString() + ") found color: " + color);
+				}
+				return color;
+			}
+			
+			// get the color of a pixel at the given coordinate in the drawing
+			// this is the function the SVG calls
+			function getColorInDrawingAt(xCoord, yCoord) {
+				return getColorAt(context, xCoord, yCoord);
+			}
+			
+			// perform the eye dropper for the surrounding art
+			function surroundingEyeDropper(evt) {
+				// only do this if the eye dropper is the selected tool
+				if (document.getElementById("eyeDropper").checked) {
+					// figure out which canvas you're in and get its context
+					var myCanvas = evt.target;
+					var myContext = myCanvas.getContext("2d");
+					// get click coordinates in this canvas
+					var coords = myCanvas.getBoundingClientRect();
+					var mouseX = evt.clientX - coords.left;
+					var mouseY = evt.clientY - coords.top;
+					// get the color at that pixel in that region
+					var color = getColorAt(myContext, mouseX, mouseY);
+					// set this as the color choice
+					setColorChoiceInHTML(color);
+				} // else do nothing
+			}
+			
+		</script>
+
+	</head>
+
+	<body onload="init()">
+
+		<h1>Team Aries: Week 4 Drawing Tool</h1>
+
+		<form id="controls" onsubmit="return onFormSubmit(this)">
+		
+			<fieldset style="width: 20%">
+			
+				<legend><b>Drawing Tool Controls</b></legend>
+				
+				<div id="commonControls">
+				
+					<label>
+						SEE DEBUG MESSAGES: 
+						<input type="checkbox" name="debugging" value="debugging" onchange="changeDebugging(this.checked)"> 
+					</label>
+					
+					<label>
+						TOGGLE PLATFORM TOOLS: 
+						<input type="checkbox" name="masking" value="masking" onchange="changeMasking(this.checked)"> 
+					</label>
+					
+					<input type="button" name="undo" value="UNDO" onclick="undoButton()">
+					
+					<input type="button" name="redo" value="REDO" onclick="redoButton()">
+						
+					<input type="button" name="clear" value="CLEAR ALL" onclick="location.reload(true)">
+					
+					<label>
+						SELECT STROKE WIDTH: 
+						<input type="number" name="strokewidth" value="1" min="1" max="50" onchange="changeStrokeWidth(this.value)"> 
+					</label>
+					
+				</div>
+				
+				<div id="drawControls" style="display: block">
+				
+					<label>
+						SELECT COLOR: 
+						<input type="color" name="color" id="color" value="#000000" onchange="changeColor(this.value)"> 
+					</label>
+					
+					<label>
+						TOGGLE SHAPE FILL: 
+						<input type="checkbox" name="shapefill" value="shapefill" onchange="changeShapeFill(this.checked)"> 
+					</label>
+					
+					<label>
+						SELECT TOOL TYPE:
+						<br>
+						<input type="radio" name="tool" value="0" checked="" onclick="changeTool(this.value)"> Rectangle
+						<br>
+						<input type="radio" name="tool" value="1" onclick="changeTool(this.value)"> Ellipse
+						<br>
+						<input type="radio" name="tool" value="2" onclick="changeTool(this.value)"> Polygon
+						<br>
+						<input type="radio" name="tool" value="3" onclick="changeTool(this.value)"> Brush
+						<br>
+						<input type="radio" name="tool" value="4" onclick="changeTool(this.value)"> Eraser
+						<br>
+						<input type="radio" name="tool" value="5" id="eyeDropper" onclick="changeTool(this.value)"> Eye Dropper
+						<br>
+						<input type="radio" name="tool" value="6" onclick="changeTool(this.value)"> Paint Can
+					</label>
+					
+				</div>
+				
+				<div id="platformControls" style="display: none">
+				
+					<label>
+						SELECT PLATFORM TYPE:
+						<br>
+						<input type="radio" name="platform" value="7" checked="" onclick="changeTool(this.value)"> Wall (solid)
+						<br>
+						<input type="radio" name="platform" value="8" onclick="changeTool(this.value)"> Ladder (permeable)
+					</label>
+				
+				</div>
+				
+			</fieldset>
+
+		</form>
+			
+		<br>
+		
+		<div id="displayDiv" style="display: block; position: fixed; top: 10%; left: 25%;">
+			<div id="aboveLeftDiv" style="position: absolute; border: 1px solid grey; top: 0px; left: 0px; width: 50px; height: 50px;"><canvas id="aboveLeftDivCanvas" width="50" height="50"></canvas></div>
+			<div id="aboveDiv" style="position: absolute; border: 1px solid grey; top: 0px; left: 51px; width: 600px; height: 50px;"><canvas id="aboveDivCanvas" width="600" height="50"></canvas></div>
+			<div id="aboveRightDiv" style="position: absolute; border: 1px solid grey; top: 0px; left: 652px; width: 50px; height: 50px;"><canvas id="aboveRightDivCanvas" width="50" height="50"></canvas></div>
+			<div id="leftDiv" style="position: absolute; border: 1px solid grey; top: 51px; left: 0px; width: 50px; height: 350px;"><canvas id="leftDivCanvas" width="50" height="350"></canvas></div>
+			<div id="centerDiv" style="position: absolute; border: 1px solid grey; top: 51px; left: 51px; width: 600px; height: 350px;">
+				<object id="drawingObj" data="./week4test_files/canvas.svg" type="image/svg+xml">
+					<p>Whoops, your browser does not seem to support SVG. :(</p>
+				</object>
+			</div>
+			<div id="rightDiv" style="position: absolute; border: 1px solid grey; top: 51px; left: 652px; width: 50px; height: 350px;"><canvas id="rightDivCanvas" width="50" height="350"></canvas></div>
+			<div id="belowLeftDiv" style="position: absolute; border: 1px solid grey; top: 402px; left: 0px; width: 50px; height: 50px;"><canvas id="belowLeftDivCanvas" width="50" height="50"></canvas></div>
+			<div id="belowDiv" style="position: absolute; border: 1px solid grey; top: 402px; left: 51px; width: 600px; height: 50px;"><canvas id="belowDivCanvas" width="600" height="50"></canvas></div>
+			<div id="belowRightDiv" style="position: absolute; border: 1px solid grey; top: 402px; left: 652px; width: 50px; height: 50px;"><canvas id="belowRightDivCanvas" width="50" height="50"></canvas></div>
+		</div>
+
+	
+
+
+
+
+
+</body></html>
