@@ -19,10 +19,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 	xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	version="1.1">
-	<path id='my-path' d=''>
-
 	<script type="text/javascript" xlink:href="js/svg.js/dist/svg.min.js"></script>>
-
 	<script type="text/ecmascript"> <![CDATA[
 		var debugging = false;
 		var canvas;
@@ -249,5 +246,4 @@ https://github.com/oreillymedia/svg-essentials-examples
 			}
 		}
 	]]> </script>
-	</path>
 </svg>
