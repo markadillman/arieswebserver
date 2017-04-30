@@ -148,7 +148,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 			}
 			
 			function onFormSubmit() {
-				var draw = SVG('svgCanvas');
+				var draw = SVG.get('svgCanvas');
 				draw.each(function(i,children){
 					console.log(i);
 				})
