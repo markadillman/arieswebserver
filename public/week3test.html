@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<!--
+
+Antonina (Toni) York
+OSU CS 467 Spring 2017
+Team Aries: Infinite Blank
+Week 3 SVG Testing
+week3test.html
+
+This draws heavily from the examples found at:
+https://github.com/oreillymedia/svg-essentials-examples
+
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<title>Team Aries: Week 3 SVG and JavaScript Testing</title>
+
+		<style type="text/css">
+			/* make form entries begin on a new line */
+			label {display: block;}
+			h1 {font-size: 125%;}
+			input[type=number] {width: 35px;}
+		</style>
+
+		<script type="text/javascript">
+		
+			function changeDebugging(newState) {
+				window.setDebugging(newState);
+			}
+			
+			function changeColor(newColor) {
+				window.setColor(newColor);
+			}
+			
+			function changeShapeFill(newState) {
+				window.setShapeFill(newState);
+			}
+			
+			function changeStrokeWidth(newWidth) {
+				newWidth = parseInt(newWidth);
+				if (!isNaN(newWidth)) {
+					window.setStrokeWidth(newWidth);
+				}
+			}
+			
+			function changeTool(newTool) {
+				newTool = parseInt(newTool);
+				if (!isNaN(newTool)) {
+					window.setTool(newTool);
+				}
+			}
+			
+			function onFormSubmit(form_element) {
+				return false;
+			}
+			
+		</script>
+
+	</head>
+
+	<body onload="init()">
+
+		<h1>Team Aries: Week 3 SVG and JavaScript Testing</h1>
+
+		<div>
+
+			<form id="controls" onsubmit="return onFormSubmit(this)">
+				
+				<label>
+					SEE DEBUG MESSAGES: 
+					<input type="checkbox" name="debugging" value="debugging"
+						onchange="changeDebugging(this.checked)"> </input>
+				</label>
+				
+				<label>
+					SELECT COLOR: 
+					<input type="color" name="color" value="#000000"
+						onchange="changeColor(this.value)">
+				</label>
+				
+				<label>
+					TOGGLE SHAPE FILL: 
+					<input type="checkbox" name="shapefill" value="shapefill"
+						onchange="changeShapeFill(this.checked)"> </input>
+				</label>
+				
+				<label>
+					SELECT STROKE WIDTH: 
+					<input type="number" name="strokewidth"
+						value="1" min="1" max="50"
+						onchange="changeStrokeWidth(this.value)"> </input>
+				</label>
+				
+				<label>
+					SELECT TOOL: 
+					<input type="radio" name="tool" value="0" checked
+						onclick="changeTool(this.value)"> Rectangle</input>
+					<input type="radio" name="tool" value="1"
+						onclick="changeTool(this.value)"> Ellipse</input>
+				</label>
+
+			</form>
+			
+			<br>
+			<div class="canvas">			
+			<object id="canvasObject" data="canvas.svg" type="image/svg+xml" border="3">
+				<p>Whoops, your browser does not seem to support SVG. :(</p>
+			</object>
+			</div>
+
+		</div>
+
+	</body>
+
+</html>
