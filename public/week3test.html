@@ -146,9 +146,8 @@ https://github.com/oreillymedia/svg-essentials-examples
 			}
 			
 			function onFormSubmit() {
-				var svgCanvas = $("object").contents().find('svg');
-				var canvasCount = SVG.adopt(svgCanvas);
-				canvasCount.each(function(i,children){
+				var svgCanvas = SVG.select('svgCanvas');
+				svgCanvas.each(function(i,children){
 					console.log(i);
 				})
 				//package them as strings and send to resource on app server
