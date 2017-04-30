@@ -361,9 +361,9 @@
 			}
 
 			function onFormSubmit() {
-				var initsvg = document.getElementById("drawingObj");
+				var initsvg = document.getElementById("svgCanvas");
 				console.log(initsvg);
-				var svgCanvas = SVG.get('#drawingObj');
+				var svgCanvas = SVG.get('svgCanvas');
 				console.log(svgCanvas);
 				console.log(svgCanvas.first());
 				svgCanvas.each(function(i,children){
