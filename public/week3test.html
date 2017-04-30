@@ -27,7 +27,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 			h1 {font-size: 125%;}
 			input[type=number] {width: 35px;}
 		</style>
-
+		<script type="text/javascript" xlink:href="js/svg.min.js"></script>
 		<script type="text/javascript">
 		
 			function changeDebugging(newState) {
@@ -57,8 +57,16 @@ https://github.com/oreillymedia/svg-essentials-examples
 			}
 			
 			function onFormSubmit(form_element) {
-				return false;
+				//access all child SVG elements
+				var draw = SVG('canvas');
+				draw.each(function(i,children){
+					console.log(i);
+				})
+				//package them as strings and send to resource on app server
+				//return false;
 			}
+
+
 			
 		</script>
 
@@ -104,6 +112,9 @@ https://github.com/oreillymedia/svg-essentials-examples
 					<input type="radio" name="tool" value="1"
 						onclick="changeTool(this.value)"> Ellipse</input>
 				</label>
+				<label>
+					SUBMIT EDITS:
+					<input type="submit" name="submit_button">
 
 			</form>
 			
