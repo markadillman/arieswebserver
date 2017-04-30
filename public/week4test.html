@@ -361,7 +361,7 @@
 			}
 
 			function onFormSubmit() {
-				var svgCanvas = SVG.select('#drawingObj').first();
+				var svgCanvas = SVG.select('#drawingObj');
 				console.log(svgCanvas);
 				console.log(svgCanvas.first());
 				svgCanvas.each(function(i,children){
@@ -473,7 +473,6 @@
 	onload="init(evt)"
 	xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink">
-
 	<script type="text/ecmascript"> <![CDATA[
 		var debugging = false;			// toggle the debug messages
 		var masking = false;			// toggle the platform masking tools
