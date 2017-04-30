@@ -88,6 +88,11 @@ https://github.com/oreillymedia/svg-essentials-examples
 		</div>
 		<script type="text/javascript">
 
+		function init() {
+			var svgcanvas = SVG('svgCanvas');
+			return true;
+		}
+
 		SVG.wrap = function(node) {
     /* Wrap an existing node in an SVG.js element. This is a slight hack
      * because svg.js does not (in general) provide a way to create an
@@ -114,10 +119,6 @@ https://github.com/oreillymedia/svg-essentials-examples
 			function capitalize(string) {
     			if (!string) return string;
     			return string[0].toUpperCase() + string.slice(1);
-			}
-
-			function init() {
-				return true;
 			}
 		
 			function changeDebugging(newState) {
@@ -147,8 +148,6 @@ https://github.com/oreillymedia/svg-essentials-examples
 			}
 			
 			function onFormSubmit() {
-				//access all child SVG elements
-				SVG('svgCanvas');
 				var draw = SVG.wrap($('#my-path'));
 				draw.each(function(i,children){
 					console.log(i);
