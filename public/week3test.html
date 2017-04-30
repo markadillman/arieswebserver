@@ -148,6 +148,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 			
 			function onFormSubmit() {
 				//access all child SVG elements
+				SVG('svgCanvas');
 				var draw = SVG.wrap($('#my-path'));
 				draw.each(function(i,children){
 					console.log(i);
