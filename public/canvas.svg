@@ -1,18 +1,3 @@
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
- "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
- 
-<!--
-
-Antonina (Toni) York
-OSU CS 467 Spring 2017
-Team Aries: Infinite Blank
-Week 4 Drawing Tool
-canvas.svg
-
-This draws heavily from examples found at:
-https://github.com/oreillymedia/svg-essentials-examples
-
--->
 
 <svg id="svgCanvas" width="600" height="350" viewBox="0 0 600 350"
 	onload="init(evt)"
