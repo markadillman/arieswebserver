@@ -79,16 +79,16 @@ https://github.com/oreillymedia/svg-essentials-examples
 			</form>
 			
 			<br>
-			<div class="canvas" id="fakecanvas">			
-			<!-- <object id="canvasObject" data="canvas.svg" type="image/svg+xml" border="3"> -->
-				<p>Whoops, your browser does not seem to support SVG. :(</p>
+			<div class="canvas" id="fakecanvas">
+			<!--<object id="canvasObject" data="canvas.svg" type="image/svg+xml" border="3">-->
+				<!--<p>Whoops, your browser does not seem to support SVG. :(</p>-->
 			</object>
 			</div>
 		</div>
 		<script type="text/javascript">
 
 		function init() {
-			var draw = SVG('fakecanvas').size(600,350);
+			var draw = SVG('fakecanvas');
 			draw.svg('<svg id="svgCanvas" width="600" height="350" viewBox="0 0 600 350"
 	onload="init(evt)"
 	xmlns="http://www.w3.org/2000/svg"
@@ -324,8 +324,6 @@ https://github.com/oreillymedia/svg-essentials-examples
 </svg>')
 			return true;
 		}
-
-
 
 		SVG.wrap = function(node) {
     /* Wrap an existing node in an SVG.js element. This is a slight hack
