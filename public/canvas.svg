@@ -20,7 +20,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	version="1.1">
 
-	<script type="text/javascript" xlink:href="js/svg.min.js"></script>>
+	<script type="text/javascript" xlink:href="js/svg.js/dist/svg.min.js"></script>>
 
 	<script type="text/ecmascript"> <![CDATA[
 		var debugging = false;
