@@ -79,7 +79,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 			</form>
 			
 			<br>
-			<div class="canvas">			
+			<div class="canvas" id="fakecanvas">			
 			<object id="canvasObject" data="canvas.svg" type="image/svg+xml" border="3">
 				<p>Whoops, your browser does not seem to support SVG. :(</p>
 			</object>
@@ -89,7 +89,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 				<script type="text/javascript">
 
 			function init() {
-				var draw = SVG.get('svgCanvas');
+				var draw = SVG.get('fakecanvas');
 			}
 		
 			function changeDebugging(newState) {
@@ -120,7 +120,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 			
 			function onFormSubmit() {
 				//access all child SVG elements
-				var draw = SVG.get('svgCanvas');
+				var draw = SVG.get('fakecanvas');
 				draw.each(function(i,children){
 					console.log(i);
 				})
