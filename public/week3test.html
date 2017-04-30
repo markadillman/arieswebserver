@@ -75,7 +75,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 				<label>
 					SUBMIT EDITS:
 					<input type="button" name="submit_button" onclick="onFormSubmit()"/>
-
+				</label>
 			</form>
 			
 			<br>
@@ -145,16 +145,18 @@ https://github.com/oreillymedia/svg-essentials-examples
 				}
 			}
 			
-			/*function onFormSubmit() {
-				var svgCanvas = SVG('canvasObject');
+			function onFormSubmit() {
+				var svgObject = document.getElementById("svgObject");
+				var svgDoc = a.contentDocument;
+				var svgCanvas = SVG.adopt(svgDoc);
 				console.log(svgCanvas);
 				console.log(svgCanvas.first());
 				svgCanvas.each(function(i,children){
-					console.log(children);
+					console.log(i);
 				})
 				//package them as strings and send to resource on app server
 				return false;
-			}*/
+			}
 			
 		</script>
 
