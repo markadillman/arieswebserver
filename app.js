@@ -45,4 +45,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+console.log('Server running at http://52.42.5.103:80/');
+
 module.exports = app;
