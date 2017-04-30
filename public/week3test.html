@@ -57,7 +57,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 				}
 			}
 			
-			function onFormSubmit(form_element) {
+			function onFormSubmit() {
 				//access all child SVG elements
 				var draw = SVG('canvas');
 				draw.each(function(i,children){
@@ -79,7 +79,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 
 		<div>
 
-			<form id="controls" onsubmit="return onFormSubmit(this)">
+			<form id="controls">
 				
 				<label>
 					SEE DEBUG MESSAGES: 
@@ -115,7 +115,7 @@ https://github.com/oreillymedia/svg-essentials-examples
 				</label>
 				<label>
 					SUBMIT EDITS:
-					<input type="submit" name="submit_button">
+					<input type="button" name="submit_button" onclick="onFormSubmit()"/>
 
 			</form>
 			
