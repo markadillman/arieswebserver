@@ -80,7 +80,240 @@ https://github.com/oreillymedia/svg-essentials-examples
 			
 			<br>
 			<div class="canvas" id="fakecanvas">			
-			<object id="canvasObject" data="canvas.svg" type="image/svg+xml" border="3">
+			<svg id="svgCanvas" width="600" height="350" viewBox="0 0 600 350"
+	onload="init(evt)"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="1.1">
+	<script type="text/javascript" xlink:href="js/svg.js/dist/svg.min.js"></script>>
+	<script type="text/ecmascript"> <![CDATA[
+		var debugging = false;
+		var canvas;
+		var canvasWidth = 600;
+		var canvasHeight = 350;
+		var svgns;
+		var xOffset = 0;
+		var yOffset = 0;
+		var xStart = 0;
+		var yStart = 0;
+		var colorChoice = "#000000";
+		var toolList = ["Rectangle", "Ellipse"];
+		var toolChoice = 0;
+		var strokeWidthChoice = 1;
+		var shapeFillChoice = false;
+		var shapeFillNone = "none";
+		var shapeFillChoiceString = shapeFillNone;
+		var currentObject = 0;
+	
+		function init(evt) {
+			// select the empty svg object, get its namespace and offsets
+			canvas = document.getElementById("svgCanvas");
+			svgns = canvas.namespaceURI;
+			var coords = canvas.getBoundingClientRect();
+			xOffset = coords.left;
+			yOffset = coords.top;
+		
+			// set up event listeners for the canvas
+			canvas.addEventListener("mousedown", mouseDown);
+			canvas.addEventListener("mousemove", mouseMove);
+			canvas.addEventListener("mouseup", mouseUp);
+			canvas.addEventListener("click", mouseClick);
+			
+			// link HTML functions to SVG functions
+			top.setDebugging = svgSetDebugging;
+			top.setColor = svgSetColor;
+			top.setShapeFill = svgSetShapeFill;
+			top.setStrokeWidth = svgSetStrokeWidth;
+			top.setTool = svgSetTool;
+		}
+		
+		function svgSetDebugging(newState) {
+			debugging = newState;
+		}
+		
+		function svgSetColor(newColor) {
+			colorChoice = newColor;
+			if (debugging) {alert("Color changed to " + colorChoice + ".");}
+		}
+		
+		function svgSetShapeFill(newState) {
+			shapeFillChoice = newState;
+			if (debugging) {alert("Shape fill set to " + shapeFillChoice + ".");}
+		}
+		
+		function svgSetStrokeWidth(newWidth) {
+			if (newWidth < 1) {
+				newWidth = 1;
+			}
+			else if (newWidth > 50) {
+				newWidth = 50;
+			}
+			strokeWidthChoice = newWidth;
+			if (debugging) {alert("Stroke width set to " + strokeWidthChoice.toString() + ".");}
+		}
+		
+		function svgSetTool(newTool) {
+			toolChoice = newTool;
+			if (debugging) {alert("Tool changed to " + toolList[toolChoice] + ".");}
+		}
+		
+		function mouseDown(evt) {
+			switch(toolChoice) {
+				case 0: // rectangle
+					xStart = evt.clientX - xOffset;
+					yStart = evt.clientY - yOffset;
+					var newRect;
+					newRect = document.createElementNS(svgns, "rect");
+					newRect.setAttribute("id", currentObject.toString());
+					newRect.setAttribute("x", xStart.toString());
+					newRect.setAttribute("y", yStart.toString());
+					newRect.setAttribute("width", "0");
+					newRect.setAttribute("height", "0");
+					if (shapeFillChoice) {
+						shapeFillChoiceString = colorChoice;
+					} else {
+						shapeFillChoiceString = shapeFillNone;
+					}
+					newRect.setAttribute("style", "fill: " +
+						shapeFillChoiceString + "; stroke: " + 
+						colorChoice + "; stroke-width: " +
+						strokeWidthChoice.toString());
+					canvas.appendChild(newRect);
+					break;
+					
+				case 1: // ellipse
+					xStart = evt.clientX - xOffset;
+					yStart = evt.clientY - yOffset;
+					var newEllipse;
+					newEllipse = document.createElementNS(svgns, "ellipse");
+					newEllipse.setAttribute("id", currentObject.toString());
+					newEllipse.setAttribute("cx", xStart.toString());
+					newEllipse.setAttribute("cy", yStart.toString());
+					newEllipse.setAttribute("rx", "0");
+					newEllipse.setAttribute("ry", "0");
+					if (shapeFillChoice) {
+						shapeFillChoiceString = colorChoice;
+					} else {
+						shapeFillChoiceString = shapeFillNone;
+					}
+					newEllipse.setAttribute("style", "fill: " +
+						shapeFillChoiceString + "; stroke: " + 
+						colorChoice + "; stroke-width: " +
+						strokeWidthChoice.toString());
+					canvas.appendChild(newEllipse);
+					break;
+					
+				default: // should never get here
+					alert("Something went horribly awry with the tool picker.");
+			}
+		}
+		
+		function mouseMove(evt) {
+			switch(toolChoice) {
+				case 0: // rectangle
+					
+					// get mouse coordinates in the canvas
+					var xMouse = evt.clientX - xOffset;
+					var yMouse = evt.clientY - yOffset;
+					
+					// get the current rectangle
+					var newRect;
+					newRect = document.getElementById(currentObject.toString());
+					
+					// calculate new rectangle info
+					var xNew = Math.min(xMouse, xStart);
+					var yNew = Math.min(yMouse, yStart);
+					var wNew =  Math.abs(xMouse - xStart);
+					var hNew =  Math.abs(yMouse - yStart);
+					
+					// set new rectangle info
+					newRect.setAttribute("x", xNew.toString());
+					newRect.setAttribute("y", yNew.toString());
+					newRect.setAttribute("width", wNew.toString());
+					newRect.setAttribute("height", hNew.toString());
+					break;
+					
+				case 1: // circle
+					
+					// get mouse coordinates in the canvas
+					var xMouse = evt.clientX - xOffset;
+					var yMouse = evt.clientY - yOffset;
+					
+					// get the current circle
+					var newEllipse;
+					newEllipse = document.getElementById(currentObject.toString());
+					
+					// calculate new rectangle info
+					var xNew = Math.min(xMouse, xStart);
+					var yNew = Math.min(yMouse, yStart);
+					var wNew =  Math.abs(xMouse - xStart);
+					var hNew =  Math.abs(yMouse - yStart);
+					
+					// calculate new circle info
+					var rxNew = wNew/2;
+					var ryNew = hNew/2;
+					var cxNew = xNew + rxNew;
+					var cyNew = yNew + ryNew;
+					
+					// set new circle info
+					newEllipse.setAttribute("cx", cxNew.toString());
+					newEllipse.setAttribute("cy", cyNew.toString());
+					newEllipse.setAttribute("rx", rxNew.toString());
+					newEllipse.setAttribute("ry", ryNew.toString());
+					break;
+					
+				default: // should never get here
+					alert("Something went horribly awry with the tool picker.");
+			}
+		}
+		
+		function mouseUp(evt) {
+			switch(toolChoice) {
+				case 0: // rectangle
+					if (debugging) {
+						var newRect = document.getElementById(currentObject.toString());
+						alert(currentObject.toString() + ": Made a rectangle at (" +
+								newRect.getAttribute("x") +	", " +
+								newRect.getAttribute("y") + ") with width: " +
+								newRect.getAttribute("width") + " and height: " +
+								newRect.getAttribute("height") + ".");
+					}
+					currentObject += 1;
+					break;
+				
+				case 1: // circle
+					if (debugging) {
+						var newCircle = document.getElementById(currentObject.toString());
+						alert(currentObject.toString() + ": Made an ellipse at (" +
+								newCircle.getAttribute("cx") +	", " +
+								newCircle.getAttribute("cy") + ") with x-radius: " +
+								newCircle.getAttribute("rx") + " and y-radius: " +
+								newCircle.getAttribute("ry") + ".");
+					}
+					currentObject += 1;
+					break;
+					
+				default: // should never get here
+					alert("Something went horribly awry with the tool picker.");
+			}
+		}
+		
+		function mouseClick(evt) {
+			switch(toolChoice) {
+				case 0: // rectangle
+					
+					break;
+				
+				case 1: // circle
+					
+					break;
+				default: // should never get here
+					alert("Something went horribly awry with the tool picker.");
+			}
+		}
+	]]> </script>
+</svg>
+
 				<p>Whoops, your browser does not seem to support SVG. :(</p>
 			</object>
 			</div>
