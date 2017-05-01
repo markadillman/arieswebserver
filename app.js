@@ -20,6 +20,9 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
+app.use(express.json());
+app.use(expres.urlencoded());
+app.use(xmlparser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(stylus.middleware(path.join(__dirname, 'public')));
@@ -29,8 +32,8 @@ app.use('/', index);
 app.use('/users', users);
 
 //test environment 1
-app.get('/art',function(req,res){
-	res.render('week3test.html')
+app.post('/art',function(req,res,next){
+	console.log(req.body);
 })
 
 // catch 404 and forward to error handler

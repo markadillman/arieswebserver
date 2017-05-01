@@ -361,12 +361,20 @@
 			}
 
 			function onFormSubmit() {
+				//select art group
 				var initsvg = document.getElementById("svgCanvas");
+				//art group index 5, platform index 6
 				var tarGroup = initsvg.childNodes[5];
 				var serializer = new XMLSerializer();
 				var groupstring = serializer.serializeToString(tarGroup);
 				console.log(groupstring);
-				//package them as strings and send to resource on app server
+				//package them as strings and send them as payload of PUT
+				var request = new XMLHTTPRequest();
+				var url = "http://ec2-52-42-5-103.us-west-2.compute.amazonaws.com/art";
+				var payload = groupstring;
+				request.open("POST",url,true);
+				request.setRequestHeader("Content-type","application/xhtml+xml");
+				request.send(data);
 				return false;
 			}
 			
