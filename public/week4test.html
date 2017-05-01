@@ -364,11 +364,11 @@
 				var initsvg = document.getElementById("svgCanvas");
 				console.log(initsvg);
 				var serializer = new XMLSerializer();
-				console.log(str);
 				var svgCanvas = SVG.get('svgCanvas');
 				console.log(svgCanvas);
 				var artGroup = svgCanvas.get(5);
 				var groupstring = serializer.serializeToString(artGroup);
+				console.log(groupstring);
 				var platGroup = svgCanvas.get(6);
 				console.log(artGroup);
 				artGroup.each(function(i,children){
