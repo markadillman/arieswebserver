@@ -365,6 +365,7 @@
 				var tarGroup = initsvg.childNodes[5];
 				var serializer = new XMLSerializer();
 				var groupstring = serializer.serializeToString(tarGroup);
+				console.log(groupstring);
 				//package them as strings and send to resource on app server
 				return false;
 			}
