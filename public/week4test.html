@@ -364,7 +364,7 @@
 				var initsvg = document.getElementById("svgCanvas");
 				console.log(initsvg);
 				var serializer = new XMLSerializer();
-				var str = serializer.serializeToString(initsvg);
+				var str = serializer.serializeToString(initsvg.children().eq(5));
 				console.log(str);
 				var svgCanvas = SVG.get('svgCanvas');
 				console.log(svgCanvas);
